@@ -12,55 +12,56 @@ public class TaskManagerApp {
 
 
     public static void main(String[] args) {
-//        LogManager.getLogManager().reset();
-        int choice = 0;
-        do {
-            System.out.println("1 - Create simple task\n2 - Create priority task\n" +
-                    "3 - Create task with deadline\n4 - Show current task\n5 - Show all tasks\n" +
-                    "6 - Do current task\n7 - Search task by name\n8 - Search task by date of creation\n" +
-                    "9 - Delete task by ID\n10 - Delete task by name\n" +
-                    "11 - Delete task by name and date of creation\n0 - Exit");
-            System.out.print("Input your choice: ");
+        try {
+            int choice = 0;
+            do {
+                System.out.println("1 - Create simple task\n2 - Create priority task\n" +
+                        "3 - Create task with deadline\n4 - Show current task\n5 - Show all tasks\n" +
+                        "6 - Do current task\n7 - Search task by name\n8 - Search task by date of creation\n" +
+                        "9 - Delete task by ID\n10 - Delete task by name\n" +
+                        "11 - Delete task by name and date of creation\n0 - Exit");
+                System.out.print("Input your choice: ");
 
-            choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    createTask();
-                    break;
-                case 2:
-                    createPriorityTask();
-                    break;
-                case 3:
-                    createTaskWithDeadline();
-                    break;
-                case 4:
-                    showCurrentTask();
-                    break;
-                case 5:
-                    showAllTasks();
-                    break;
-                case 6:
-                    doTask();
-                    break;
-                case 7:
-                    showAllTasksByName();
-                    break;
-                case 8:
-                    showAllTasksByDateOfCreation();
-                    break;
-                case 9:
-                    deleteTaskByID();
-                    break;
-                case 10:
-                    deleteTaskByName();
-                    break;
-                case 11:
-                    deleteTaskByNameAndDate();
-                    break;
-            }
-        } while (choice!=0);
-
-        manager.destroy();
+                choice = scanner.nextInt();
+                switch (choice) {
+                    case 1:
+                        createTask();
+                        break;
+                    case 2:
+                        createPriorityTask();
+                        break;
+                    case 3:
+                        createTaskWithDeadline();
+                        break;
+                    case 4:
+                        showCurrentTask();
+                        break;
+                    case 5:
+                        showAllTasks();
+                        break;
+                    case 6:
+                        doTask();
+                        break;
+                    case 7:
+                        showAllTasksByName();
+                        break;
+                    case 8:
+                        showAllTasksByDateOfCreation();
+                        break;
+                    case 9:
+                        deleteTaskByID();
+                        break;
+                    case 10:
+                        deleteTaskByName();
+                        break;
+                    case 11:
+                        deleteTaskByNameAndDate();
+                        break;
+                }
+            } while (choice != 0);
+        } finally {
+            manager.destroy();
+        }
     }
 
     private static void createTask() {
