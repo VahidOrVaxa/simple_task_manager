@@ -1,0 +1,7 @@
+# Default ignored files
+/shelf/
+/.idea/workspace.xml
+/target/
+/src/main/resources/
+/src/main/java/com/example/app/TestClass.java
+/src/main/java/com/example/app/gui/
