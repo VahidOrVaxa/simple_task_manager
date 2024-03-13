@@ -2,17 +2,20 @@ package com.example.app;
 
 import com.example.app.service.Task;
 import com.example.app.service.TaskManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Scanner;
-import java.util.logging.LogManager;
 
 public class TaskManagerApp {
     private static Scanner scanner = new Scanner(System.in);
     private static TaskManager manager = new TaskManager();
+    private static Logger logger;
 
 
     public static void main(String[] args) {
         try {
+            logger = LogManager.getRootLogger();
             int choice = 0;
             do {
                 System.out.println("1 - Create simple task\n2 - Create priority task\n" +
@@ -138,10 +141,14 @@ public class TaskManagerApp {
     private static void deleteTaskByName() {
         System.out.print("Input name of task: ");
         scanner.nextLine();
-        if (manager.deleteTask(scanner.nextLine()))
+        String taskName = scanner.nextLine();
+        if (manager.deleteTask(taskName))
             System.out.println("\nTask(s) was/were deleted!\n");
-        else
+        else {
+            logger.info("Invalid name: " + taskName);
             System.out.println("\nThere aren't task with this name!\n");
+        }
+
     }
 
     private static void deleteTaskByNameAndDate() {
