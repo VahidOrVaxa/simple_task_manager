@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.InputMismatchException;
 
 @Entity
 @Table(name = "tasks")
@@ -42,7 +43,7 @@ public class Task implements Comparable {
         this.priority = priority;
     }
 
-    public Task(String name, String description, int priority, String deadline) {
+    public Task(String name, String description, int priority, String deadline) throws RuntimeException {
         this.name = name;
         this.description = description;
         this.creationDate = new Date();
@@ -50,8 +51,7 @@ public class Task implements Comparable {
         try {
             this.deadline = dateFormat.parse(deadline);
         } catch (ParseException e) {
-            e.printStackTrace();
-            System.err.println("This task has not deadline!");
+            throw new RuntimeException(e);
         }
 
     }
@@ -62,8 +62,12 @@ public class Task implements Comparable {
         int result = priority - task.priority;
         if (result != 0) {
             return result;
-        } else if (deadline!=null) {
+        } else if (deadline!=null && task.deadline!=null) {
             return deadline.compareTo(task.deadline);
+        } else if (deadline!=null) {
+            return -1;
+        } else if (task.deadline!=null) {
+            return 1;
         } else {
             return creationDate.compareTo(task.creationDate);
         }

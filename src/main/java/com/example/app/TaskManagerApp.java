@@ -5,17 +5,26 @@ import com.example.app.service.TaskManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class TaskManagerApp {
-    private static Scanner scanner = new Scanner(System.in);
-    private static TaskManager manager = new TaskManager();
+    private static Scanner scanner;
+    private static TaskManager manager;
     private static Logger logger;
 
+    private TaskManagerApp(){}
+
+    private static void Initialize() {
+        scanner = new Scanner(System.in);
+        manager = new TaskManager();
+        logger = LogManager.getRootLogger();
+    }
 
     public static void main(String[] args) {
         try {
-            logger = LogManager.getRootLogger();
+            Initialize();
             int choice = 0;
             do {
                 System.out.println("1 - Create simple task\n2 - Create priority task\n" +
@@ -63,6 +72,7 @@ public class TaskManagerApp {
                 }
             } while (choice != 0);
         } finally {
+            logger.info("End of processing");
             manager.destroy();
         }
     }
@@ -83,8 +93,16 @@ public class TaskManagerApp {
         System.out.print("Input description: ");
         String description = scanner.nextLine();
         System.out.print("Input priority: ");
-        int priority = scanner.nextInt();
-        manager.addTask(new Task(name, description, priority));
+        String priorityLine = null;
+        try {
+            priorityLine = scanner.nextLine();
+            int priority = Integer.parseInt(priorityLine);
+            manager.addTask(new Task(name, description, priority));
+            System.out.println("\nComplete!\n");
+        } catch (NumberFormatException ex) {
+            logger.info("Invalid value -> " + ex.getMessage() + " -> Input: " + priorityLine);
+            System.out.println("Incorrect value!");
+        }
     }
 
     private static void createTaskWithDeadline() {
@@ -97,7 +115,11 @@ public class TaskManagerApp {
         String deadline = scanner.nextLine();
         System.out.print("Input priority: ");
         int priority = scanner.nextInt();
-        manager.addTask(new Task(name, description, priority, deadline));
+        try {
+            manager.addTask(new Task(name, description, priority, deadline));
+        } catch (RuntimeException ex) {
+            System.out.println(ex.getCause().toString());
+        }
     }
 
     private static void showCurrentTask() {
@@ -125,17 +147,27 @@ public class TaskManagerApp {
     private static void showAllTasksByName() {
         System.out.print("Input name of task: ");
         scanner.nextLine();
-        for (Task task : manager.searchTasksByName(scanner.nextLine())) {
-            System.out.println(task);
+        List<Task> tasks = manager.searchTasksByName(scanner.nextLine());
+        if (!tasks.isEmpty()) {
+            for (Task task : tasks) {
+                System.out.println(task);
+            }
+        } else {
+            System.out.println("Tasks with this name do not exist!");
         }
     }
 
     private static void showAllTasksByDateOfCreation() {
-        System.out.print("Input date of task: ");
+        System.out.print("Input date of task(yyyy-mm-dd): ");
         scanner.nextLine();
-        for (Task task : manager.searchTasksByDateOfCreation(scanner.nextLine())) {
-            System.out.println(task);
-        }
+         List<Task> tasks = manager.searchTasksByDateOfCreation(scanner.nextLine());
+         if (!tasks.isEmpty()) {
+             for (Task task : tasks) {
+                 System.out.println(task);
+             }
+         } else {
+             System.out.println("Tasks with this date do not exist!");
+         }
     }
 
     private static void deleteTaskByName() {
@@ -159,8 +191,10 @@ public class TaskManagerApp {
         String date = scanner.nextLine();
         if (manager.deleteTask(name, date))
             System.out.println("\nTask(s) was/were deleted!\n");
-        else
+        else {
+            logger.info("Invalid input -> date: " + date + "; Task name: " + name);
             System.out.println("\nThere aren't task with this name and this date!\n");
+        }
     }
 
     private static void deleteTaskByID() {
